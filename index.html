@@ -110,6 +110,20 @@
             margin-bottom: 20px;
             font-weight: 500;
         }
+        .customer-name {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -135,6 +149,10 @@
             <div class="qr-code" id="qrCode">
                 Đang tạo mã QR...
             </div>
+        </div>
+
+        <div class="customer-name" id="customerName">
+            <!-- Tên khách hàng sẽ hiển thị ở đây -->
         </div>
 
         <div class="timer-container">
@@ -305,6 +323,12 @@
 
         document.getElementById('waitingScreen').classList.add('hidden');
         document.getElementById('qrScreen').classList.add('active');
+
+        // THÊM PHẦN NÀY - Hiển thị tên khách hàng
+        const customerNameElement = document.getElementById('customerName');
+        const prefix = order.gender === 'f' ? 'Chị' : 'Anh';
+        const customerName = order.name || 'Khách hàng';
+        customerNameElement.textContent = `${prefix} ${customerName}`;
 
         generateQRCode(order.order_ID);
         startTimer();
