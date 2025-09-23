@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1900 Hair Salon - Kiosk</title>
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -77,12 +79,16 @@
         .qr-code {
             width: 400px;
             height: 400px;
-            border: 2px solid #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
             color: #666;
+        }
+
+        .qr-code canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .qr-info {
@@ -226,9 +232,8 @@
             try {
                 console.log('Checking for new orders...');
 
-                // Test 1: Thử lấy tất cả records trước
-                console.log('Testing basic API call...');
-                let response = await fetch(`${this.apiEndpoint}?limit=5`, {
+                // Gọi API để lấy records với status=NEW
+                const response = await fetch(`${this.apiEndpoint}?limit=10`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -237,42 +242,16 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Basic API error: ${response.status}`);
-                }
-
-                let basicData = await response.json();
-                console.log('Basic API Response:', basicData);
-
-                // Kiểm tra structure để biết field names chính xác
-                if (basicData.list && basicData.list.length > 0) {
-                    console.log('Sample record structure:', Object.keys(basicData.list[0]));
-                    console.log('First record:', basicData.list[0]);
-                }
-
-                // Test 2: Thử query với where clause đơn giản hơn
-                console.log('Testing filtered API call...');
-                response = await fetch(`${this.apiEndpoint}?limit=10`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Filtered API error: ${response.status}`);
+                    throw new Error(`API error: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('Filtered API Response:', data);
 
-                // Tìm records có status=NEW trong client-side trước
+                // Tìm records có status=NEW
                 if (data.list && data.list.length > 0) {
                     const newOrders = data.list.filter(record =>
                         record.status === 'NEW' || record.Status === 'NEW'
                     );
-
-                    console.log('Found NEW orders:', newOrders);
 
                     if (newOrders.length > 0) {
                         const newOrder = newOrders[0];
@@ -287,7 +266,6 @@
 
             } catch (error) {
                 console.error('Error checking new orders:', error);
-                // Không hiển thị error cho user, chỉ log
             }
         }
 
@@ -375,11 +353,38 @@
             this.waitingScreen.style.display = 'none';
             this.qrScreen.style.display = 'flex';
 
-            // Tạm thời hiển thị text, sẽ thay bằng QR code thực ở bước 3
-            this.qrCode.innerHTML = `QR Code cho Order: ${orderId}`;
+            // Tạo QR Code thực
+            this.generateQRCode(orderId);
 
             this.startTimer();
             console.log(`Showing QR screen for order: ${orderId}`);
+        }
+
+        generateQRCode(orderId) {
+            // Clear previous QR code
+            this.qrCode.innerHTML = '';
+
+            // Tạo URL cho QR code
+            const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
+
+            // Generate QR Code
+            QRCode.toCanvas(this.qrCode, qrUrl, {
+                width: 380,
+                height: 380,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                },
+                margin: 2,
+                errorCorrectionLevel: 'M'
+            }, (error) => {
+                if (error) {
+                    console.error('QR Code generation error:', error);
+                    this.qrCode.innerHTML = `Lỗi tạo QR Code cho Order: ${orderId}`;
+                } else {
+                    console.log(`QR Code generated for: ${qrUrl}`);
+                }
+            });
         }
 
         startTimer() {
@@ -449,6 +454,12 @@
                 console.log('No current order to update');
             }
         }
+
+        // QR Test function
+        testQRGeneration() {
+            console.log('Testing QR Code generation...');
+            this.generateQRCode('QR_TEST_001');
+        }
     }
 
     // Khởi tạo app
@@ -459,6 +470,7 @@
     window.testWaiting = () => app.testBackToWaiting();
     window.testAPI = () => app.testAPI();
     window.testUpdate = () => app.testUpdateStatus();
+    window.testQRGen = () => app.testQRGeneration();
 </script>
 </body>
 </html>
