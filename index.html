@@ -92,14 +92,6 @@
             justify-content: center;
         }
 
-        .logodetail {
-            width: 180px;
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         /* QR screen - Simple QR + Timer only */
         .qr-screen {
             display: none;
@@ -159,10 +151,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 10px;
             text-align: center;
+            align-items: center;
+            justify-content: center;
         }
 
         .header .logo-text {
@@ -224,18 +217,16 @@
         }
 
         .confirm-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00674E;
             color: white;
             border: none;
-            padding: 18px 40px;
+            padding: 10px 25px;
             border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
             width: 100%;
-            max-width: 300px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -490,9 +481,7 @@
     <div class="order-container">
         <!-- Header -->
         <div class="header">
-            <div class="logodetail">
-                <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
+            <div class="logo-text">1900 HAIR SALON</div>
             <h1 class="header-title">Xác nhận đơn hàng</h1>
         </div>
 
