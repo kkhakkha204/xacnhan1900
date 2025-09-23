@@ -93,8 +93,8 @@
         }
 
         .logodetail {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,15 +152,14 @@
         /* ORDER PAGE STYLES */
         .order-container {
             background: white;
-            border-radius: 20px;
-            max-width: 500px;
+            border-radius: 14px;
             width: 100%;
             overflow: hidden;
         }
 
         .header {
             color: white;
-            padding: 10px;
+            padding-bottom: 10px;
             text-align: center;
             display: flex;           /* Thêm dòng này */
             flex-direction: column;  /* Thêm dòng này */
@@ -168,35 +167,28 @@
             justify-content: center;
         }
 
-        .header .logo-text {
-            color: #000D0A;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
         .header-title {
-            color: #000D0A;
+            color: #ffffff;
             font-size: 24px;
             font-weight: 300;
             margin-bottom: 5px;
         }
 
         .content {
-            padding: 40px 30px;
+            padding: 25px 15px;
         }
 
         .order-info h2 {
             color: #333;
-            font-size: 22px;
-            margin-bottom: 20px;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
 
         .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #f0f0f0;
         }
 
@@ -206,21 +198,21 @@
 
         .info-label {
             color: #666;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .info-value {
             color: #333;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
             text-align: right;
             flex: 1;
             margin-left: 20px;
         }
 
         .info-value.money {
-            color: #667eea;
-            font-size: 20px;
+            color: #000000;
+            font-size: 14px;
         }
 
         .confirm-section {
@@ -232,22 +224,18 @@
             background: #00674E;
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 12px 20px;
             border-radius: 50px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            max-width: 200px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto;
-        }
-
-        .confirm-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
         }
 
         .confirm-button:disabled {
