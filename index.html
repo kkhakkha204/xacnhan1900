@@ -361,16 +361,11 @@
             color: #666;
         }
 
-        .rating-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
 
         .rating-btn.rating-1 { background: #003024; color: white; }
         .rating-btn.rating-2 { background: #003024; color: white; }
         .rating-btn.rating-3 { background: #003024; color: white; }
         .rating-btn.rating-4 { background: #003024; color: white; }
-        .rating-btn.rating-5 { background: #003024; color: white; }
 
         .rating-labels {
             display: flex;
@@ -541,11 +536,10 @@
         <p class="feedback-subtitle">Bạn hài lòng như thế nào với dịch vụ của chúng tôi?</p>
 
         <div class="rating-buttons">
-            <button class="rating-btn rating-1" onclick="event.stopPropagation(); submitFeedback(1)">😢</button>
-            <button class="rating-btn rating-2" onclick="event.stopPropagation(); submitFeedback(2)">😞</button>
-            <button class="rating-btn rating-3" onclick="event.stopPropagation(); submitFeedback(3)">😐</button>
-            <button class="rating-btn rating-4" onclick="event.stopPropagation(); submitFeedback(4)">😊</button>
-            <button class="rating-btn rating-5" onclick="event.stopPropagation(); submitFeedback(5)">😍</button>
+            <button class="rating-btn rating-1" onclick="event.stopPropagation(); submitFeedback(1)">😞</button>
+            <button class="rating-btn rating-2" onclick="event.stopPropagation(); submitFeedback(2)">😐</button>
+            <button class="rating-btn rating-3" onclick="event.stopPropagation(); submitFeedback(3)">😊</button>
+            <button class="rating-btn rating-4" onclick="event.stopPropagation(); submitFeedback(4)">😍</button>
         </div>
 
     </div>
