@@ -197,13 +197,19 @@
 
             this.currentOrderId = null;
             this.timerInterval = null;
+            this.pollingInterval = null;
             this.timeLeft = 0;
+
+            // API Configuration
+            this.apiEndpoint = 'https://data.nextgency.vn/api/v1/db/data/noco/porgm26ubel7371/m0azbw50puhet36';
+            this.pollingDelay = 2000; // Poll mỗi 2 giây
 
             this.init();
         }
 
         init() {
             this.showWaitingScreen();
+            this.startPolling();
             console.log('Kiosk app initialized');
         }
 
@@ -213,6 +219,118 @@
             this.currentOrderId = null;
             this.clearTimer();
             console.log('Showing waiting screen');
+        }
+
+        // API Methods
+        async checkNewOrders() {
+            try {
+                console.log('Checking for new orders...');
+
+                // Gọi API để lấy records với status=NEW
+                const response = await fetch(`${this.apiEndpoint}?where=(status,eq,NEW)&limit=1&sort=-CreatedAt`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                // Kiểm tra có order mới không
+                if (data.list && data.list.length > 0) {
+                    const newOrder = data.list[0];
+                    if (newOrder.order_ID && newOrder.order_ID !== this.currentOrderId) {
+                        console.log('New order found:', newOrder.order_ID);
+                        this.handleNewOrder(newOrder);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error checking new orders:', error);
+                // Không hiển thị error cho user, chỉ log
+            }
+        }
+
+        async updateOrderStatus(orderId, status) {
+            try {
+                console.log(`Updating order ${orderId} to status: ${status}`);
+
+                // Tìm record theo order_ID
+                const findResponse = await fetch(`${this.apiEndpoint}?where=(order_ID,eq,${orderId})&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!findResponse.ok) {
+                    throw new Error(`Find error: ${findResponse.status}`);
+                }
+
+                const findData = await findResponse.json();
+
+                if (findData.list && findData.list.length > 0) {
+                    const record = findData.list[0];
+                    const recordId = record.Id;
+
+                    // Cập nhật status
+                    const updateResponse = await fetch(`${this.apiEndpoint}/${recordId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    });
+
+                    if (!updateResponse.ok) {
+                        throw new Error(`Update error: ${updateResponse.status}`);
+                    }
+
+                    console.log(`Successfully updated order ${orderId} to ${status}`);
+                    return true;
+                }
+
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                return false;
+            }
+        }
+
+        handleNewOrder(order) {
+            // Dừng polling khi có order mới
+            this.stopPolling();
+
+            // Hiển thị QR screen
+            this.showQRScreen(order.order_ID);
+        }
+
+        // Polling Methods
+        startPolling() {
+            // Dừng polling cũ nếu có
+            this.stopPolling();
+
+            // Chỉ polling khi đang ở màn hình chờ
+            if (this.currentOrderId === null) {
+                console.log('Starting polling...');
+                this.pollingInterval = setInterval(() => {
+                    this.checkNewOrders();
+                }, this.pollingDelay);
+            }
+        }
+
+        stopPolling() {
+            if (this.pollingInterval) {
+                console.log('Stopping polling...');
+                clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
+            }
         }
 
         showQRScreen(orderId) {
@@ -257,23 +375,53 @@
 
         onTimerExpired() {
             console.log('Timer expired, updating status to DONE');
+
+            // Cập nhật status=DONE trong database
+            if (this.currentOrderId) {
+                this.updateOrderStatus(this.currentOrderId, 'DONE');
+            }
+
             this.clearTimer();
-            // Ở bước 2 sẽ thêm logic cập nhật status=DONE
             this.showWaitingScreen();
+
+            // Bắt đầu polling lại
+            this.startPolling();
         }
 
         // Test function - sẽ bỏ khi tích hợp API thực
         testShowQR() {
+            this.stopPolling();
             this.showQRScreen('TEST123');
+        }
+
+        testBackToWaiting() {
+            this.showWaitingScreen();
+            this.startPolling();
+        }
+
+        // API Test functions
+        async testAPI() {
+            console.log('Testing API connection...');
+            await this.checkNewOrders();
+        }
+
+        async testUpdateStatus() {
+            if (this.currentOrderId) {
+                await this.updateOrderStatus(this.currentOrderId, 'DONE');
+            } else {
+                console.log('No current order to update');
+            }
         }
     }
 
     // Khởi tạo app
     const app = new KioskApp();
 
-    // Test function - có thể gọi từ console để test
+    // Test functions - có thể gọi từ console để test
     window.testQR = () => app.testShowQR();
-    window.testWaiting = () => app.showWaitingScreen();
+    window.testWaiting = () => app.testBackToWaiting();
+    window.testAPI = () => app.testAPI();
+    window.testUpdate = () => app.testUpdateStatus();
 </script>
 </body>
 </html>
