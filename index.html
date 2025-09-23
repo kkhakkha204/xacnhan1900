@@ -379,7 +379,115 @@
             width: 80px;
             text-align: center;
         }
+        /* SUCCESS STATE STYLES */
+        .rating-state {
+            display: block;
+        }
 
+        .rating-state.hidden {
+            display: none;
+        }
+
+        .success-state {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .success-state.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #00674E, #003024);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+            margin: 0 auto 30px;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #003024;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .rating-display {
+            display: inline-flex;
+            align-items: center;
+            background: #003024;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .rating-emoji {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .success-details {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .success-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .success-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .success-detail-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .success-detail-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .auto-close-notice {
+            font-size: 14px;
+            color: #999;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
     </style>
 </head>
@@ -480,16 +588,59 @@
 <!-- FEEDBACK POPUP -->
 <div class="feedback-popup" id="feedbackPopup">
     <div class="feedback-content">
-        <h3 class="feedback-title">Đánh giá dịch vụ</h3>
-        <p class="feedback-subtitle">Bạn hài lòng như thế nào với dịch vụ của chúng tôi?</p>
 
-        <div class="rating-buttons">
-            <button class="rating-btn rating-1" onclick="event.stopPropagation(); submitFeedback(1)">😞</button>
-            <button class="rating-btn rating-2" onclick="event.stopPropagation(); submitFeedback(2)">😐</button>
-            <button class="rating-btn rating-3" onclick="event.stopPropagation(); submitFeedback(3)">😊</button>
-            <button class="rating-btn rating-4" onclick="event.stopPropagation(); submitFeedback(4)">😍</button>
+        <!-- RATING STATE -->
+        <div class="rating-state" id="ratingState">
+            <h3 class="feedback-title">Đánh giá dịch vụ</h3>
+            <p class="feedback-subtitle">Bạn hài lòng như thế nào với dịch vụ của chúng tôi?</p>
+
+            <div class="rating-buttons">
+                <button class="rating-btn rating-1" onclick="event.stopPropagation(); submitFeedback(1)">😞</button>
+                <button class="rating-btn rating-2" onclick="event.stopPropagation(); submitFeedback(2)">😐</button>
+                <button class="rating-btn rating-3" onclick="event.stopPropagation(); submitFeedback(3)">😊</button>
+                <button class="rating-btn rating-4" onclick="event.stopPropagation(); submitFeedback(4)">😍</button>
+            </div>
         </div>
 
+        <!-- SUCCESS STATE -->
+        <div class="success-state" id="successState">
+            <div class="success-icon">✅</div>
+
+            <h3 class="success-title">Cảm ơn bạn!</h3>
+
+            <p class="success-message">
+                Đánh giá của bạn đã được ghi nhận.<br>
+                Đơn hàng đã được xác nhận thành công!
+            </p>
+
+            <div class="rating-display" id="ratingDisplay">
+                <span class="rating-emoji" id="ratingEmoji">😊</span>
+                <span id="ratingText">Hài lòng</span>
+            </div>
+
+            <div class="success-details">
+                <div class="success-detail-item">
+                    <span class="success-detail-label">Mã đơn hàng</span>
+                    <span class="success-detail-value" id="orderIdDisplay">#12345</span>
+                </div>
+                <div class="success-detail-item">
+                    <span class="success-detail-label">Khách hàng</span>
+                    <span class="success-detail-value" id="customerDisplay">-</span>
+                </div>
+                <div class="success-detail-item">
+                    <span class="success-detail-label">Dịch vụ</span>
+                    <span class="success-detail-value" id="serviceDisplay">-</span>
+                </div>
+                <div class="success-detail-item">
+                    <span class="success-detail-label">Tổng tiền</span>
+                    <span class="success-detail-value" id="totalDisplay">-</span>
+                </div>
+            </div>
+
+            <p class="auto-close-notice">
+                Cửa sổ này sẽ tự động đóng sau <span id="countdown">5</span> giây...
+            </p>
+        </div>
     </div>
 </div>
 
@@ -920,14 +1071,59 @@
         }, 100);
     }
 
-    function hideFeedbackPopup() {
-        console.log('🎯 hideFeedbackPopup called');
-        const popup = document.getElementById('feedbackPopup');
-        if (popup) {
-            popup.classList.remove('active');
-        }
+    // Rating configurations
+    const ratingConfig = {
+        1: { emoji: '😞', text: 'Không hài lòng' },
+        2: { emoji: '😐', text: 'Bình thường' },
+        3: { emoji: '😊', text: 'Hài lòng' },
+        4: { emoji: '😍', text: 'Rất hài lòng' }
+    };
+
+    let countdownTimer = null;
+
+    // Show success state
+    function showSuccessState(rating, orderData) {
+        // Hide rating state
+        document.getElementById('ratingState').classList.add('hidden');
+
+        // Update success content
+        const config = ratingConfig[rating];
+        document.getElementById('ratingEmoji').textContent = config.emoji;
+        document.getElementById('ratingText').textContent = config.text;
+
+        // Update order details
+        document.getElementById('orderIdDisplay').textContent = `#${orderData.order_ID}`;
+        document.getElementById('customerDisplay').textContent = orderData.name;
+        document.getElementById('serviceDisplay').textContent = orderData['product/service'];
+        document.getElementById('totalDisplay').textContent = formatMoney(orderData.money);
+
+        // Show success state
+        document.getElementById('successState').classList.add('show');
+
+        // Start countdown
+        startCountdown();
     }
 
+    // Start auto-close countdown
+    function startCountdown(seconds = 5) {
+        let timeLeft = seconds;
+        const countdownElement = document.getElementById('countdown');
+
+        countdownElement.textContent = timeLeft;
+
+        countdownTimer = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdownTimer);
+                hideFeedbackPopup();
+                console.log('🔄 Popup auto-closed, returning to kiosk...');
+            }
+        }, 1000);
+    }
+
+    // Updated submitFeedback function
     async function submitFeedback(rating) {
         console.log('🎯 submitFeedback called with rating:', rating);
 
@@ -944,24 +1140,10 @@
 
             console.log('✅ Order updated successfully');
 
-            // Hide popup
-            hideFeedbackPopup();
-
-            // Show success message
-            const successMessage = document.getElementById('successMessage');
-            if (successMessage) {
-                successMessage.style.display = 'block';
-                successMessage.textContent = '🎉 Cảm ơn bạn đã đánh giá! Đơn hàng đã được xác nhận.';
-            }
+            // Show success state instead of hiding popup immediately
+            showSuccessState(rating, orderPageOrder);
 
             console.log(`✅ Order ${orderPageOrder.order_ID} confirmed with rating: ${rating}`);
-            console.log('📱 Kiosk should auto-return to waiting screen via polling in ~2 seconds');
-
-            // Optional: Auto redirect after 3 seconds (fallback)
-            setTimeout(() => {
-                console.log('🔄 Fallback redirect to kiosk...');
-                router.navigateToKiosk();
-            }, 5000);
 
         } catch (error) {
             console.error('❌ Error submitting feedback:', error);
@@ -978,6 +1160,25 @@
                 errorMessage.textContent = '❌ ' + error.message;
             }
         }
+    }
+
+    // Updated hideFeedbackPopup to clear timer
+    function hideFeedbackPopup() {
+        console.log('🎯 hideFeedbackPopup called');
+        const popup = document.getElementById('feedbackPopup');
+        if (popup) {
+            popup.classList.remove('active');
+        }
+
+        // Clear countdown timer
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+        }
+
+        // Reset states
+        document.getElementById('ratingState').classList.remove('hidden');
+        document.getElementById('successState').classList.remove('show');
     }
 
     // INITIALIZE APP
