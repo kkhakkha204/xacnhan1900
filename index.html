@@ -282,16 +282,17 @@
         showWaitingScreen() {
             this.waitingScreen.style.display = 'flex';
             this.qrScreen.style.display = 'none';
-            this.currentOrderId = null;
+            this.currentOrderId = null; // Reset currentOrderId
             this.clearTimer();
-            console.log('Showing waiting screen');
+            console.log('Showing waiting screen - currentOrderId reset to:', this.currentOrderId);
         }
 
         // API Methods
         async checkNewOrders() {
             try {
                 this.lastPollTime = Date.now();
-                console.log('Checking for new orders...');
+                console.log('=== POLLING START ===');
+                console.log('Current Order ID:', this.currentOrderId);
 
                 // Gọi API để lấy records với status=NEW
                 const response = await fetch(`${this.apiEndpoint}?limit=10`, {
@@ -307,24 +308,42 @@
                 }
 
                 const data = await response.json();
+                console.log('All records:', data.list?.length || 0);
                 this.consecutiveErrors = 0; // Reset error counter on success
 
                 // Tìm records có status=NEW
                 if (data.list && data.list.length > 0) {
+                    console.log('Sample record structure:', data.list[0]);
+
                     const newOrders = data.list.filter(record =>
                         record.status === 'NEW' || record.Status === 'NEW'
                     );
+
+                    console.log('Found NEW orders:', newOrders.length);
 
                     if (newOrders.length > 0) {
                         const newOrder = newOrders[0];
                         const orderId = newOrder.order_ID || newOrder.Order_ID;
 
+                        console.log('Processing order:', orderId);
+                        console.log('Current order ID:', this.currentOrderId);
+                        console.log('Is different?', orderId !== this.currentOrderId);
+                        console.log('Order ID exists?', !!orderId);
+
                         if (orderId && orderId !== this.currentOrderId) {
-                            console.log('New order found:', orderId);
+                            console.log('✅ NEW ORDER DETECTED:', orderId);
                             this.handleNewOrder({...newOrder, order_ID: orderId});
+                        } else {
+                            console.log('❌ Order ignored - same as current or invalid');
                         }
+                    } else {
+                        console.log('No NEW orders found');
                     }
+                } else {
+                    console.log('No records returned from API');
                 }
+
+                console.log('=== POLLING END ===');
 
             } catch (error) {
                 console.error('Error checking new orders:', error);
@@ -388,6 +407,8 @@
         }
 
         handleNewOrder(order) {
+            console.log('🔥 HANDLING NEW ORDER:', order.order_ID);
+
             // Dừng polling khi có order mới
             this.stopPolling();
 
@@ -400,12 +421,23 @@
             // Dừng polling cũ nếu có
             this.stopPolling();
 
+            // Reset polling delay khi start lại
+            this.pollingDelay = 3000;
+            this.consecutiveErrors = 0;
+
             // Chỉ polling khi đang ở màn hình chờ
             if (this.currentOrderId === null) {
-                console.log('Starting polling...');
+                console.log('🟢 STARTING POLLING... (every', this.pollingDelay + 'ms)');
+
+                // Gọi ngay lần đầu
+                this.checkNewOrders();
+
+                // Sau đó poll theo interval
                 this.pollingInterval = setInterval(() => {
                     this.checkNewOrders();
                 }, this.pollingDelay);
+            } else {
+                console.log('❌ POLLING NOT STARTED - currentOrderId exists:', this.currentOrderId);
             }
         }
 
@@ -434,7 +466,7 @@
             this.qrCode.innerHTML = '';
 
             // Tạo URL cho QR code
-            const qrUrl = `https://nghecontent.eventhub.vn/xacnhan?orderId=${orderId}`;
+            const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
 
             // Tạo QR Code bằng QRServer API với kích thước responsive
             const screenWidth = window.innerWidth;
