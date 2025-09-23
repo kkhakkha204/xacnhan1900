@@ -226,8 +226,9 @@
             try {
                 console.log('Checking for new orders...');
 
-                // Gọi API để lấy records với status=NEW
-                const response = await fetch(`${this.apiEndpoint}?where=(status,eq,NEW)&limit=1&sort=-CreatedAt`, {
+                // Test 1: Thử lấy tất cả records trước
+                console.log('Testing basic API call...');
+                let response = await fetch(`${this.apiEndpoint}?limit=5`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -236,18 +237,51 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                    throw new Error(`Basic API error: ${response.status}`);
+                }
+
+                let basicData = await response.json();
+                console.log('Basic API Response:', basicData);
+
+                // Kiểm tra structure để biết field names chính xác
+                if (basicData.list && basicData.list.length > 0) {
+                    console.log('Sample record structure:', Object.keys(basicData.list[0]));
+                    console.log('First record:', basicData.list[0]);
+                }
+
+                // Test 2: Thử query với where clause đơn giản hơn
+                console.log('Testing filtered API call...');
+                response = await fetch(`${this.apiEndpoint}?limit=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Filtered API error: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('API Response:', data);
+                console.log('Filtered API Response:', data);
 
-                // Kiểm tra có order mới không
+                // Tìm records có status=NEW trong client-side trước
                 if (data.list && data.list.length > 0) {
-                    const newOrder = data.list[0];
-                    if (newOrder.order_ID && newOrder.order_ID !== this.currentOrderId) {
-                        console.log('New order found:', newOrder.order_ID);
-                        this.handleNewOrder(newOrder);
+                    const newOrders = data.list.filter(record =>
+                        record.status === 'NEW' || record.Status === 'NEW'
+                    );
+
+                    console.log('Found NEW orders:', newOrders);
+
+                    if (newOrders.length > 0) {
+                        const newOrder = newOrders[0];
+                        const orderId = newOrder.order_ID || newOrder.Order_ID;
+
+                        if (orderId && orderId !== this.currentOrderId) {
+                            console.log('New order found:', orderId);
+                            this.handleNewOrder({...newOrder, order_ID: orderId});
+                        }
                     }
                 }
 
