@@ -224,10 +224,10 @@
             background: #00674E;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
@@ -521,20 +521,21 @@
                 </div>
             </div>
 
-            <!-- Confirm Section -->
-            <div class="confirm-section" id="confirmSection" style="display: none;">
-                <button class="confirm-button" id="confirmButton" onclick="event.stopPropagation(); showFeedbackPopup();">
-                    <span class="loading-spinner" id="loadingSpinner"></span>
-                    <span id="buttonText">✅ Xác nhận đơn hàng</span>
-                </button>
 
-                <div class="success-message" id="successMessage">
-                    🎉 Cảm ơn bạn! Đơn hàng đã được xác nhận thành công.
-                </div>
+        </div>
+        <!-- Confirm Section -->
+        <div class="confirm-section" id="confirmSection" style="display: none;">
+            <button class="confirm-button" id="confirmButton" onclick="event.stopPropagation(); showFeedbackPopup();">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">Xác nhận đơn hàng</span>
+            </button>
 
-                <div class="error-message" id="errorMessage">
-                    ⚠️ Có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ salon.
-                </div>
+            <div class="success-message" id="successMessage">
+                🎉 Cảm ơn bạn! Đơn hàng đã được xác nhận thành công.
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                ⚠️ Có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ salon.
             </div>
         </div>
     </div>
