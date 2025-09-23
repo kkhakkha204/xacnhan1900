@@ -233,6 +233,10 @@
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
             width: 100%;
             max-width: 300px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
         }
 
         .confirm-button:hover {
@@ -520,7 +524,7 @@
 
             <!-- Confirm Section -->
             <div class="confirm-section" id="confirmSection" style="display: none;">
-                <button class="confirm-button" id="confirmButton" onclick="showFeedbackPopup()">
+                <button class="confirm-button" id="confirmButton" onclick="event.stopPropagation(); showFeedbackPopup();">
                     <span class="loading-spinner" id="loadingSpinner"></span>
                     <span id="buttonText">✅ Xác nhận đơn hàng</span>
                 </button>
@@ -544,11 +548,11 @@
         <p class="feedback-subtitle">Bạn hài lòng như thế nào với dịch vụ của chúng tôi?</p>
 
         <div class="rating-buttons">
-            <button class="rating-btn rating-1" onclick="submitFeedback(1)">😢</button>
-            <button class="rating-btn rating-2" onclick="submitFeedback(2)">😞</button>
-            <button class="rating-btn rating-3" onclick="submitFeedback(3)">😐</button>
-            <button class="rating-btn rating-4" onclick="submitFeedback(4)">😊</button>
-            <button class="rating-btn rating-5" onclick="submitFeedback(5)">😍</button>
+            <button class="rating-btn rating-1" onclick="event.stopPropagation(); submitFeedback(1)">😢</button>
+            <button class="rating-btn rating-2" onclick="event.stopPropagation(); submitFeedback(2)">😞</button>
+            <button class="rating-btn rating-3" onclick="event.stopPropagation(); submitFeedback(3)">😐</button>
+            <button class="rating-btn rating-4" onclick="event.stopPropagation(); submitFeedback(4)">😊</button>
+            <button class="rating-btn rating-5" onclick="event.stopPropagation(); submitFeedback(5)">😍</button>
         </div>
 
         <div class="rating-labels">
@@ -864,6 +868,26 @@
             const result = await nocoAPI.getNewRecords();
             const newRecords = result.list || [];
 
+            // Check if current order still exists and is NEW
+            if (kioskState === 'displaying_qr' && currentOrder) {
+                const currentOrderStillNew = newRecords.find(record =>
+                    record.order_ID === currentOrder.order_ID
+                );
+
+                if (!currentOrderStillNew) {
+                    // Current order is no longer NEW (was confirmed), go back to waiting
+                    console.log(`📱 Order ${currentOrder.order_ID} was confirmed, returning to waiting screen`);
+                    currentOrder = null;
+                    if (qrTimer) {
+                        clearInterval(qrTimer);
+                        qrTimer = null;
+                    }
+                    showWaitingScreen();
+                    return;
+                }
+            }
+
+            // Check for new orders when waiting
             if (kioskState === 'waiting' && newRecords.length > 0) {
                 const latestOrder = newRecords[0];
                 showQRScreen(latestOrder);
@@ -874,10 +898,15 @@
     }
 
     function initializeKiosk() {
+        console.log('🚀 Initializing Kiosk...');
         showWaitingScreen();
-        pollingInterval = setInterval(pollForNewRecords, 5000);
+
+        // Poll more frequently (every 2 seconds) to detect confirmations faster
+        pollingInterval = setInterval(pollForNewRecords, 2000);
         pollForNewRecords();
+
         window.kioskInitialized = true;
+        console.log('✅ Kiosk initialized with 2s polling');
     }
 
     // ORDER PAGE FUNCTIONS
@@ -935,46 +964,91 @@
 
     // FEEDBACK FUNCTIONS
     function showFeedbackPopup() {
-        if (!orderPageOrder) return;
+        console.log('🎯 showFeedbackPopup called');
 
-        // Hide confirm button and show popup
-        document.getElementById('confirmButton').style.display = 'none';
-        document.getElementById('feedbackPopup').classList.add('active');
+        if (!orderPageOrder) {
+            console.error('❌ No orderPageOrder available');
+            return;
+        }
+
+        console.log('✅ Showing feedback popup for order:', orderPageOrder.order_ID);
+
+        // Add delay to prevent immediate click outside trigger
+        setTimeout(() => {
+            // Hide confirm button
+            const confirmButton = document.getElementById('confirmButton');
+            if (confirmButton) {
+                confirmButton.style.display = 'none';
+            }
+
+            // Show popup
+            const popup = document.getElementById('feedbackPopup');
+            if (popup) {
+                popup.classList.add('active');
+                console.log('✅ Popup shown with delay');
+            } else {
+                console.error('❌ Popup element not found');
+            }
+        }, 100);
     }
 
     function hideFeedbackPopup() {
-        document.getElementById('feedbackPopup').classList.remove('active');
+        console.log('🎯 hideFeedbackPopup called');
+        const popup = document.getElementById('feedbackPopup');
+        if (popup) {
+            popup.classList.remove('active');
+        }
     }
 
     async function submitFeedback(rating) {
-        if (!orderPageOrder) return;
+        console.log('🎯 submitFeedback called with rating:', rating);
+
+        if (!orderPageOrder) {
+            console.error('❌ No orderPageOrder available');
+            return;
+        }
 
         try {
+            console.log('📡 Updating order with feedback...');
+
             // Update order status to DONE and add feedback
             await nocoAPI.updateOrderStatusAndFeedback(orderPageOrder.order_ID, 'DONE', rating);
+
+            console.log('✅ Order updated successfully');
 
             // Hide popup
             hideFeedbackPopup();
 
             // Show success message
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('successMessage').textContent = '🎉 Cảm ơn bạn đã đánh giá! Đơn hàng đã được xác nhận.';
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'block';
+                successMessage.textContent = '🎉 Cảm ơn bạn đã đánh giá! Đơn hàng đã được xác nhận.';
+            }
 
             console.log(`✅ Order ${orderPageOrder.order_ID} confirmed with rating: ${rating}`);
+            console.log('📱 Kiosk should auto-return to waiting screen via polling in ~2 seconds');
 
-            // Optional: Auto redirect after 3 seconds
+            // Optional: Auto redirect after 3 seconds (fallback)
             setTimeout(() => {
+                console.log('🔄 Fallback redirect to kiosk...');
                 router.navigateToKiosk();
-            }, 3000);
+            }, 5000);
 
         } catch (error) {
             console.error('❌ Error submitting feedback:', error);
 
             // Hide popup and show error
             hideFeedbackPopup();
-            document.getElementById('confirmButton').style.display = 'block';
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('errorMessage').textContent = '❌ ' + error.message;
+
+            const confirmButton = document.getElementById('confirmButton');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (confirmButton) confirmButton.style.display = 'block';
+            if (errorMessage) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = '❌ ' + error.message;
+            }
         }
     }
 
@@ -995,16 +1069,22 @@
     window.addEventListener('load', initializeApp);
     window.addEventListener('beforeunload', cleanup);
 
-    // Close popup when clicking outside
+    // Close popup when clicking outside - Fixed
     document.addEventListener('click', function(event) {
         const popup = document.getElementById('feedbackPopup');
         const popupContent = document.querySelector('.feedback-content');
+        const confirmButton = document.getElementById('confirmButton');
 
-        if (popup.classList.contains('active') &&
-            !popupContent.contains(event.target)) {
+        // Don't close if clicking on confirm button or inside popup
+        if (popup && popup.classList.contains('active') &&
+            popupContent && !popupContent.contains(event.target) &&
+            confirmButton && !confirmButton.contains(event.target)) {
+            console.log('🎯 Closing popup - clicked outside');
             hideFeedbackPopup();
             // Show confirm button again
-            document.getElementById('confirmButton').style.display = 'block';
+            if (confirmButton) {
+                confirmButton.style.display = 'block';
+            }
         }
     });
 
