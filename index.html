@@ -366,26 +366,16 @@
             // Tạo URL cho QR code
             const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
 
-            // Tạo QR Code bằng Google Charts API
+            // Tạo QR Code bằng QRServer API
             const qrSize = '380x380';
-            const chartUrl = `https://chart.googleapis.com/chart?chs=${qrSize}&cht=qr&chl=${encodeURIComponent(qrUrl)}&choe=UTF-8`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}&data=${encodeURIComponent(qrUrl)}`;
 
-            // Tạo img element
+            // Tạo img element trực tiếp
             const qrImage = document.createElement('img');
-            qrImage.src = chartUrl;
+            qrImage.src = qrApiUrl;
             qrImage.alt = `QR Code for Order ${orderId}`;
             qrImage.style.width = '380px';
             qrImage.style.height = '380px';
-
-            // Handle load/error events
-            qrImage.onload = () => {
-                console.log(`QR Code generated for: ${qrUrl}`);
-            };
-
-            qrImage.onerror = () => {
-                console.error('QR Code generation error');
-                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
-            };
 
             // Add loading indicator
             this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tạo QR Code...</div>`;
@@ -395,6 +385,11 @@
                 this.qrCode.innerHTML = '';
                 this.qrCode.appendChild(qrImage);
                 console.log(`QR Code generated for: ${qrUrl}`);
+            };
+
+            qrImage.onerror = () => {
+                console.error('QR Code generation error');
+                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
             };
         }
 
@@ -468,7 +463,7 @@
 
         // QR Test function
         testQRGeneration() {
-            console.log('Testing QR Code generation with Google Charts...');
+            console.log('Testing QR Code generation with QRServer API...');
             this.generateQRCode('QR_TEST_001');
         }
     }
