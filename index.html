@@ -444,15 +444,15 @@
         .success-details {
             background: #f8f9fa;
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
         .success-detail-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -618,6 +618,7 @@
                 <span id="ratingText">Hài lòng</span>
             </div>
 
+            <!-- Order summary - simplified -->
             <div class="success-details">
                 <div class="success-detail-item">
                     <span class="success-detail-label">Mã đơn hàng</span>
@@ -627,19 +628,7 @@
                     <span class="success-detail-label">Khách hàng</span>
                     <span class="success-detail-value" id="customerDisplay">-</span>
                 </div>
-                <div class="success-detail-item">
-                    <span class="success-detail-label">Dịch vụ</span>
-                    <span class="success-detail-value" id="serviceDisplay">-</span>
-                </div>
-                <div class="success-detail-item">
-                    <span class="success-detail-label">Tổng tiền</span>
-                    <span class="success-detail-value" id="totalDisplay">-</span>
-                </div>
             </div>
-
-            <p class="auto-close-notice">
-                Cửa sổ này sẽ tự động đóng sau <span id="countdown">5</span> giây...
-            </p>
         </div>
     </div>
 </div>
@@ -1079,9 +1068,7 @@
         4: { emoji: '😍', text: 'Rất hài lòng' }
     };
 
-    let countdownTimer = null;
-
-    // Show success state
+    // Show success state - NO AUTO CLOSE
     function showSuccessState(rating, orderData) {
         // Hide rating state
         document.getElementById('ratingState').classList.add('hidden');
@@ -1091,36 +1078,15 @@
         document.getElementById('ratingEmoji').textContent = config.emoji;
         document.getElementById('ratingText').textContent = config.text;
 
-        // Update order details
+        // Update order details - simplified
         document.getElementById('orderIdDisplay').textContent = `#${orderData.order_ID}`;
         document.getElementById('customerDisplay').textContent = orderData.name;
-        document.getElementById('serviceDisplay').textContent = orderData['product/service'];
-        document.getElementById('totalDisplay').textContent = formatMoney(orderData.money);
 
         // Show success state
         document.getElementById('successState').classList.add('show');
 
-        // Start countdown
-        startCountdown();
-    }
-
-    // Start auto-close countdown
-    function startCountdown(seconds = 5) {
-        let timeLeft = seconds;
-        const countdownElement = document.getElementById('countdown');
-
-        countdownElement.textContent = timeLeft;
-
-        countdownTimer = setInterval(() => {
-            timeLeft--;
-            countdownElement.textContent = timeLeft;
-
-            if (timeLeft <= 0) {
-                clearInterval(countdownTimer);
-                hideFeedbackPopup();
-                console.log('🔄 Popup auto-closed, returning to kiosk...');
-            }
-        }, 1000);
+        // NO countdown - stay open
+        console.log('✅ Success state shown, staying open...');
     }
 
     // Updated submitFeedback function
@@ -1170,13 +1136,7 @@
             popup.classList.remove('active');
         }
 
-        // Clear countdown timer
-        if (countdownTimer) {
-            clearInterval(countdownTimer);
-            countdownTimer = null;
-        }
-
-        // Reset states
+        // Reset states only
         document.getElementById('ratingState').classList.remove('hidden');
         document.getElementById('successState').classList.remove('show');
     }
