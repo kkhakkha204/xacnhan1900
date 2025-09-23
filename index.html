@@ -92,6 +92,14 @@
             justify-content: center;
         }
 
+        .logodetail {
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* QR screen - Simple QR + Timer only */
         .qr-screen {
             display: none;
@@ -131,8 +139,7 @@
         .timer-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: white;
         }
@@ -146,7 +153,6 @@
         .order-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             max-width: 500px;
             width: 100%;
             overflow: hidden;
@@ -484,7 +490,9 @@
     <div class="order-container">
         <!-- Header -->
         <div class="header">
-            <div class="logo-text">1900 HAIR SALON</div>
+            <div class="logodetail">
+                <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <h1 class="header-title">Xác nhận đơn hàng</h1>
         </div>
 
