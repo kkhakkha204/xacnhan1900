@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1900 Hair Salon - Kiosk</title>
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -86,9 +84,10 @@
             color: #666;
         }
 
-        .qr-code canvas {
+        .qr-code img {
             max-width: 100%;
             max-height: 100%;
+            border-radius: 8px;
         }
 
         .qr-info {
@@ -364,39 +363,39 @@
             // Clear previous QR code
             this.qrCode.innerHTML = '';
 
-            // Kiểm tra QRCode library đã load chưa
-            if (typeof QRCode === 'undefined') {
-                console.error('QRCode library not loaded yet');
-                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tải QR Code...</div>`;
-
-                // Retry sau 500ms
-                setTimeout(() => {
-                    this.generateQRCode(orderId);
-                }, 500);
-                return;
-            }
-
             // Tạo URL cho QR code
             const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
 
-            // Generate QR Code
-            QRCode.toCanvas(this.qrCode, qrUrl, {
-                width: 380,
-                height: 380,
-                color: {
-                    dark: '#000000',
-                    light: '#FFFFFF'
-                },
-                margin: 2,
-                errorCorrectionLevel: 'M'
-            }, (error) => {
-                if (error) {
-                    console.error('QR Code generation error:', error);
-                    this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
-                } else {
-                    console.log(`QR Code generated for: ${qrUrl}`);
-                }
-            });
+            // Tạo QR Code bằng Google Charts API
+            const qrSize = '380x380';
+            const chartUrl = `https://chart.googleapis.com/chart?chs=${qrSize}&cht=qr&chl=${encodeURIComponent(qrUrl)}&choe=UTF-8`;
+
+            // Tạo img element
+            const qrImage = document.createElement('img');
+            qrImage.src = chartUrl;
+            qrImage.alt = `QR Code for Order ${orderId}`;
+            qrImage.style.width = '380px';
+            qrImage.style.height = '380px';
+
+            // Handle load/error events
+            qrImage.onload = () => {
+                console.log(`QR Code generated for: ${qrUrl}`);
+            };
+
+            qrImage.onerror = () => {
+                console.error('QR Code generation error');
+                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
+            };
+
+            // Add loading indicator
+            this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tạo QR Code...</div>`;
+
+            // Replace with QR image when loaded
+            qrImage.onload = () => {
+                this.qrCode.innerHTML = '';
+                this.qrCode.appendChild(qrImage);
+                console.log(`QR Code generated for: ${qrUrl}`);
+            };
         }
 
         startTimer() {
@@ -469,22 +468,20 @@
 
         // QR Test function
         testQRGeneration() {
-            console.log('Testing QR Code generation...');
+            console.log('Testing QR Code generation with Google Charts...');
             this.generateQRCode('QR_TEST_001');
         }
     }
 
-    // Khởi tạo app sau khi tất cả library đã load
-    window.addEventListener('load', () => {
-        const app = new KioskApp();
+    // Khởi tạo app
+    const app = new KioskApp();
 
-        // Test functions - có thể gọi từ console để test
-        window.testQR = () => app.testShowQR();
-        window.testWaiting = () => app.testBackToWaiting();
-        window.testAPI = () => app.testAPI();
-        window.testUpdate = () => app.testUpdateStatus();
-        window.testQRGen = () => app.testQRGeneration();
-    });
+    // Test functions - có thể gọi từ console để test
+    window.testQR = () => app.testShowQR();
+    window.testWaiting = () => app.testBackToWaiting();
+    window.testAPI = () => app.testAPI();
+    window.testUpdate = () => app.testUpdateStatus();
+    window.testQRGen = () => app.testQRGeneration();
 </script>
 </body>
 </html>
