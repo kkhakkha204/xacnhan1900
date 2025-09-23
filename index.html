@@ -230,7 +230,8 @@
                 const response = await fetch(`${this.apiEndpoint}?where=(status,eq,NEW)&limit=1&sort=-CreatedAt`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
                     }
                 });
 
@@ -264,7 +265,8 @@
                 const findResponse = await fetch(`${this.apiEndpoint}?where=(order_ID,eq,${orderId})&limit=1`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
                     }
                 });
 
@@ -282,7 +284,8 @@
                     const updateResponse = await fetch(`${this.apiEndpoint}/${recordId}`, {
                         method: 'PATCH',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
                         },
                         body: JSON.stringify({
                             status: status
