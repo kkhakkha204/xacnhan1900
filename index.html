@@ -48,7 +48,7 @@
         }
 
         .order-page.active {
-            display: flex;
+            flex-direction: column;
             padding: 20px;
             align-items: center;
             justify-content: center;
@@ -490,14 +490,15 @@
 
 <!-- ORDER DETAIL PAGE -->
 <div class="page order-page" id="orderPage">
-    <div class="order-container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logodetail">
-                <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h1 class="header-title">Xác nhận đơn hàng</h1>
+    <!-- Header -->
+    <div class="header">
+        <div class="logodetail">
+            <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
+        <h1 class="header-title">Xác nhận đơn hàng</h1>
+    </div>
+    <div class="order-container">
+
 
         <!-- Content -->
         <div class="content">
