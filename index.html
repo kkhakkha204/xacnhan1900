@@ -18,6 +18,9 @@
             height: 100vh;
             overflow: hidden;
             user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
@@ -114,7 +117,37 @@
         }
 
         /* iPad responsive */
-        @media (max-width: 1024px) {
+        @media (max-width: 1024px) and (orientation: landscape) {
+            .logo {
+                width: 280px;
+                height: 280px;
+                font-size: 40px;
+            }
+
+            .waiting-text {
+                font-size: 30px;
+            }
+
+            .qr-code {
+                width: 350px;
+                height: 350px;
+            }
+
+            .qr-code img {
+                width: 350px !important;
+                height: 350px !important;
+            }
+
+            .qr-title {
+                font-size: 26px;
+            }
+
+            .qr-instruction {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 1024px) and (orientation: portrait) {
             .logo {
                 width: 250px;
                 height: 250px;
@@ -128,6 +161,11 @@
             .qr-code {
                 width: 320px;
                 height: 320px;
+            }
+
+            .qr-code img {
+                width: 320px !important;
+                height: 320px !important;
             }
 
             .qr-title {
@@ -153,6 +191,11 @@
             .qr-code {
                 width: 280px;
                 height: 280px;
+            }
+
+            .qr-code img {
+                width: 280px !important;
+                height: 280px !important;
             }
 
             .qr-container {
@@ -207,15 +250,33 @@
 
             // API Configuration
             this.apiEndpoint = 'https://data.nextgency.vn/api/v1/db/data/noco/porgm26ubel7371/m0azbw50puhet36';
-            this.pollingDelay = 2000; // Poll mỗi 2 giây
+            this.pollingDelay = 3000; // Poll mỗi 3 giây (tối ưu cho production)
+
+            // Performance tracking
+            this.lastPollTime = 0;
+            this.consecutiveErrors = 0;
 
             this.init();
+        }
+
+        // Prevent screen sleep on iPad
+        preventScreenSleep() {
+            // Keep screen awake by playing silent video
+            if ('wakeLock' in navigator) {
+                navigator.wakeLock.request('screen').catch(console.log);
+            } else {
+                // Fallback: ping every 30s
+                setInterval(() => {
+                    console.log('Keep alive ping');
+                }, 30000);
+            }
         }
 
         init() {
             this.showWaitingScreen();
             this.startPolling();
-            console.log('Kiosk app initialized');
+            this.preventScreenSleep();
+            console.log('Kiosk app initialized for iPad');
         }
 
         showWaitingScreen() {
@@ -229,6 +290,7 @@
         // API Methods
         async checkNewOrders() {
             try {
+                this.lastPollTime = Date.now();
                 console.log('Checking for new orders...');
 
                 // Gọi API để lấy records với status=NEW
@@ -245,6 +307,7 @@
                 }
 
                 const data = await response.json();
+                this.consecutiveErrors = 0; // Reset error counter on success
 
                 // Tìm records có status=NEW
                 if (data.list && data.list.length > 0) {
@@ -265,6 +328,13 @@
 
             } catch (error) {
                 console.error('Error checking new orders:', error);
+                this.consecutiveErrors++;
+
+                // Nếu lỗi liên tục > 5 lần, tăng polling delay
+                if (this.consecutiveErrors > 5) {
+                    console.warn('Multiple API errors, reducing polling frequency');
+                    this.pollingDelay = 10000; // 10 giây
+                }
             }
         }
 
@@ -364,18 +434,36 @@
             this.qrCode.innerHTML = '';
 
             // Tạo URL cho QR code
-            const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
+            const qrUrl = `https://nghecontent.eventhub.vn/xacnhan?orderId=${orderId}`;
 
-            // Tạo QR Code bằng QRServer API
-            const qrSize = '380x380';
+            // Tạo QR Code bằng QRServer API với kích thước responsive
+            const screenWidth = window.innerWidth;
+            let qrSize = '380x380';
+            let imgSize = '380px';
+
+            if (screenWidth <= 768) {
+                qrSize = '280x280';
+                imgSize = '280px';
+            } else if (screenWidth <= 1024) {
+                if (window.innerHeight < window.innerWidth) {
+                    // Landscape
+                    qrSize = '350x350';
+                    imgSize = '350px';
+                } else {
+                    // Portrait
+                    qrSize = '320x320';
+                    imgSize = '320px';
+                }
+            }
+
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}&data=${encodeURIComponent(qrUrl)}`;
 
             // Tạo img element trực tiếp
             const qrImage = document.createElement('img');
             qrImage.src = qrApiUrl;
             qrImage.alt = `QR Code for Order ${orderId}`;
-            qrImage.style.width = '380px';
-            qrImage.style.height = '380px';
+            qrImage.style.width = imgSize;
+            qrImage.style.height = imgSize;
 
             // Add loading indicator
             this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tạo QR Code...</div>`;
