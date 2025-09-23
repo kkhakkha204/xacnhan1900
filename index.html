@@ -364,6 +364,18 @@
             // Clear previous QR code
             this.qrCode.innerHTML = '';
 
+            // Kiểm tra QRCode library đã load chưa
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode library not loaded yet');
+                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tải QR Code...</div>`;
+
+                // Retry sau 500ms
+                setTimeout(() => {
+                    this.generateQRCode(orderId);
+                }, 500);
+                return;
+            }
+
             // Tạo URL cho QR code
             const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
 
@@ -380,7 +392,7 @@
             }, (error) => {
                 if (error) {
                     console.error('QR Code generation error:', error);
-                    this.qrCode.innerHTML = `Lỗi tạo QR Code cho Order: ${orderId}`;
+                    this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
                 } else {
                     console.log(`QR Code generated for: ${qrUrl}`);
                 }
@@ -462,15 +474,17 @@
         }
     }
 
-    // Khởi tạo app
-    const app = new KioskApp();
+    // Khởi tạo app sau khi tất cả library đã load
+    window.addEventListener('load', () => {
+        const app = new KioskApp();
 
-    // Test functions - có thể gọi từ console để test
-    window.testQR = () => app.testShowQR();
-    window.testWaiting = () => app.testBackToWaiting();
-    window.testAPI = () => app.testAPI();
-    window.testUpdate = () => app.testUpdateStatus();
-    window.testQRGen = () => app.testQRGeneration();
+        // Test functions - có thể gọi từ console để test
+        window.testQR = () => app.testShowQR();
+        window.testWaiting = () => app.testBackToWaiting();
+        window.testAPI = () => app.testAPI();
+        window.testUpdate = () => app.testUpdateStatus();
+        window.testQRGen = () => app.testQRGeneration();
+    });
 </script>
 </body>
 </html>
