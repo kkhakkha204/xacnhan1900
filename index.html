@@ -13,590 +13,424 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: #fff;
+            background: linear-gradient(135deg, #003F2F 0%, #000D0A 100%);
             height: 100vh;
             overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
         }
 
-        /* Màn hình chờ */
+        /* Waiting screen - Simple logo only */
         .waiting-screen {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
+        }
+
+        .waiting-screen.hidden {
+            display: none;
         }
 
         .logo {
-            width: 300px;
-            height: 300px;
-            background: #fff;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
-            font-size: 48px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .waiting-text {
-            font-size: 32px;
-            font-weight: 300;
-            color: #ccc;
-        }
-
-        /* Màn hình QR */
-        .qr-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .qr-container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-        }
-
-        .qr-code {
             width: 400px;
             height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+        }
+
+        .logoqr {
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* QR screen - Simple QR + Timer only */
+        .qr-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .qr-screen.active {
+            display: flex;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+
+        .qr-code {
+            width: 260px;
+            height: 260px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             color: #666;
+            overflow: hidden;
         }
 
         .qr-code img {
             max-width: 100%;
             max-height: 100%;
-            border-radius: 8px;
         }
 
-        .qr-info {
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .qr-title {
+        .timer-container {
+            display: flex;
+            align-items: center;
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .qr-instruction {
-            font-size: 20px;
-            color: #ccc;
-            margin-bottom: 20px;
+            color: white;
         }
 
         .timer {
             font-size: 24px;
-            color: #ff6b6b;
-            font-weight: bold;
+            color: #ffffff;
         }
 
-        /* iPad responsive */
-        @media (max-width: 1024px) and (orientation: landscape) {
-            .logo {
-                width: 280px;
-                height: 280px;
-                font-size: 40px;
-            }
-
-            .waiting-text {
-                font-size: 30px;
-            }
-
-            .qr-code {
-                width: 350px;
-                height: 350px;
-            }
-
-            .qr-code img {
-                width: 350px !important;
-                height: 350px !important;
-            }
-
-            .qr-title {
-                font-size: 26px;
-            }
-
-            .qr-instruction {
-                font-size: 20px;
-            }
-        }
-
-        @media (max-width: 1024px) and (orientation: portrait) {
-            .logo {
-                width: 250px;
-                height: 250px;
-                font-size: 36px;
-            }
-
-            .waiting-text {
-                font-size: 28px;
-            }
-
-            .qr-code {
-                width: 320px;
-                height: 320px;
-            }
-
-            .qr-code img {
-                width: 320px !important;
-                height: 320px !important;
-            }
-
-            .qr-title {
-                font-size: 24px;
-            }
-
-            .qr-instruction {
-                font-size: 18px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .logo {
-                width: 200px;
-                height: 200px;
-                font-size: 32px;
-            }
-
-            .waiting-text {
-                font-size: 24px;
-            }
-
-            .qr-code {
-                width: 280px;
-                height: 280px;
-            }
-
-            .qr-code img {
-                width: 280px !important;
-                height: 280px !important;
-            }
-
-            .qr-container {
-                padding: 30px;
-            }
+        .qr-instruction {
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Màn hình chờ -->
+    <!-- Waiting screen - Logo only -->
     <div class="waiting-screen" id="waitingScreen">
         <div class="logo">
-            1900<br>HAIR SALON
-        </div>
-        <div class="waiting-text">
-            Đang chờ đơn hàng mới...
+            <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
     </div>
 
-    <!-- Màn hình QR -->
+    <!-- QR screen - QR + Timer only -->
     <div class="qr-screen" id="qrScreen">
-        <div class="qr-info">
-            <div class="qr-title">Quét mã QR để xác nhận</div>
-            <div class="qr-instruction">Sử dụng camera điện thoại để quét mã</div>
+        <div class="logoqr">
+            <img src="a.png" alt="1900 Hair Salon" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+
+        <div class="qr-instruction">
+            Quét mã QR để xem chi tiết đơn hàng
         </div>
 
         <div class="qr-container">
             <div class="qr-code" id="qrCode">
-                QR Code sẽ hiển thị ở đây
+                Đang tạo mã QR...
             </div>
         </div>
 
-        <div class="timer" id="timer">
-            Thời gian còn lại: 03:00
+        <div class="timer-container">
+            <span class="timer" id="timer">03:00</span>
         </div>
     </div>
 </div>
 
 <script>
-    class KioskApp {
-        constructor() {
-            this.waitingScreen = document.getElementById('waitingScreen');
-            this.qrScreen = document.getElementById('qrScreen');
-            this.qrCode = document.getElementById('qrCode');
-            this.timer = document.getElementById('timer');
+    // CONFIGURATION
+    const NOCODB_CONFIG = {
+        baseUrl: 'https://data.nextgency.vn',
+        apiToken: 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy', // THAY ĐỔI TOKEN
+        baseId: 'porgm26ubel7371',
+        tableId: 'm0azbw50puhet36'
+    };
 
-            this.currentOrderId = null;
-            this.timerInterval = null;
-            this.pollingInterval = null;
-            this.timeLeft = 0;
+    // External detail page URL
+    const DETAIL_PAGE_BASE_URL = 'https://nghecontent.eventhub.vn/xacnhan';
 
-            // API Configuration
-            this.apiEndpoint = 'https://data.nextgency.vn/api/v1/db/data/noco/porgm26ubel7371/m0azbw50puhet36';
-            this.pollingDelay = 3000; // Poll mỗi 3 giây (tối ưu cho production)
-
-            // Performance tracking
-            this.lastPollTime = 0;
-            this.consecutiveErrors = 0;
-
-            this.init();
+    // NOCODB API CLASS
+    class NocoDBAPI {
+        constructor(config) {
+            this.baseUrl = config.baseUrl;
+            this.apiToken = config.apiToken;
+            this.baseId = config.baseId;
+            this.tableId = config.tableId;
+            this.apiEndpoint = `${this.baseUrl}/api/v1/db/data/noco/${this.baseId}/${this.tableId}`;
         }
 
-        // Prevent screen sleep on iPad
-        preventScreenSleep() {
-            // Keep screen awake by playing silent video
-            if ('wakeLock' in navigator) {
-                navigator.wakeLock.request('screen').catch(console.log);
-            } else {
-                // Fallback: ping every 30s
-                setInterval(() => {
-                    console.log('Keep alive ping');
-                }, 30000);
-            }
+        getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'xc-token': this.apiToken
+            };
         }
 
-        init() {
-            this.showWaitingScreen();
-            this.startPolling();
-            this.preventScreenSleep();
-            console.log('Kiosk app initialized for iPad');
-        }
-
-        showWaitingScreen() {
-            this.waitingScreen.style.display = 'flex';
-            this.qrScreen.style.display = 'none';
-            this.currentOrderId = null; // Reset currentOrderId
-            this.clearTimer();
-            console.log('Showing waiting screen - currentOrderId reset to:', this.currentOrderId);
-        }
-
-        // API Methods
-        async checkNewOrders() {
+        async getNewRecords() {
             try {
-                this.lastPollTime = Date.now();
-                console.log('=== POLLING START ===');
-                console.log('Current Order ID:', this.currentOrderId);
-
-                // Gọi API để lấy records với status=NEW
-                const response = await fetch(`${this.apiEndpoint}?limit=10`, {
+                const url = `${this.apiEndpoint}?where=(status,eq,NEW)&sort=-submit_time`;
+                const response = await fetch(url, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
-                    }
+                    headers: this.getHeaders()
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('All records:', data.list?.length || 0);
-                this.consecutiveErrors = 0; // Reset error counter on success
-
-                // Tìm records có status=NEW
-                if (data.list && data.list.length > 0) {
-                    console.log('Sample record structure:', data.list[0]);
-
-                    const newOrders = data.list.filter(record =>
-                        record.status === 'NEW' || record.Status === 'NEW'
-                    );
-
-                    console.log('Found NEW orders:', newOrders.length);
-
-                    if (newOrders.length > 0) {
-                        const newOrder = newOrders[0];
-                        const orderId = newOrder.order_ID || newOrder.Order_ID;
-
-                        console.log('Processing order:', orderId);
-                        console.log('Current order ID:', this.currentOrderId);
-                        console.log('Is different?', orderId !== this.currentOrderId);
-                        console.log('Order ID exists?', !!orderId);
-
-                        if (orderId && orderId !== this.currentOrderId) {
-                            console.log('✅ NEW ORDER DETECTED:', orderId);
-                            this.handleNewOrder({...newOrder, order_ID: orderId});
-                        } else {
-                            console.log('❌ Order ignored - same as current or invalid');
-                        }
-                    } else {
-                        console.log('No NEW orders found');
-                    }
-                } else {
-                    console.log('No records returned from API');
-                }
-
-                console.log('=== POLLING END ===');
-
+                return data;
             } catch (error) {
-                console.error('Error checking new orders:', error);
-                this.consecutiveErrors++;
-
-                // Nếu lỗi liên tục > 5 lần, tăng polling delay
-                if (this.consecutiveErrors > 5) {
-                    console.warn('Multiple API errors, reducing polling frequency');
-                    this.pollingDelay = 10000; // 10 giây
-                }
+                console.error('Error fetching new records:', error);
+                throw error;
             }
         }
 
         async updateOrderStatus(orderId, status) {
             try {
-                console.log(`Updating order ${orderId} to status: ${status}`);
-
-                // Tìm record theo order_ID
-                const findResponse = await fetch(`${this.apiEndpoint}?where=(order_ID,eq,${orderId})&limit=1`, {
+                // Find record first
+                const orderUrl = `${this.apiEndpoint}?where=(order_ID,eq,${orderId})`;
+                const response = await fetch(orderUrl, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
-                    }
+                    headers: this.getHeaders()
                 });
 
-                if (!findResponse.ok) {
-                    throw new Error(`Find error: ${findResponse.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const findData = await findResponse.json();
+                const data = await response.json();
+                const order = data.list && data.list.length > 0 ? data.list[0] : null;
 
-                if (findData.list && findData.list.length > 0) {
-                    const record = findData.list[0];
-                    const recordId = record.Id;
-
-                    // Cập nhật status
-                    const updateResponse = await fetch(`${this.apiEndpoint}/${recordId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'xc-token': 'zYAx_j_2heVC-nikJ4tZiB_NwMnuKR61dxAczZBy'
-                        },
-                        body: JSON.stringify({
-                            status: status
-                        })
-                    });
-
-                    if (!updateResponse.ok) {
-                        throw new Error(`Update error: ${updateResponse.status}`);
-                    }
-
-                    console.log(`Successfully updated order ${orderId} to ${status}`);
-                    return true;
+                if (!order) {
+                    throw new Error('Đơn hàng không tồn tại');
                 }
 
+                // Find ID field
+                const recordId = order.Id || order.id || order._id || order.ID;
+                if (!recordId) {
+                    throw new Error('Không tìm thấy ID của đơn hàng');
+                }
+
+                // Update status
+                const updateUrl = `${this.apiEndpoint}/${recordId}`;
+                const updateResponse = await fetch(updateUrl, {
+                    method: 'PATCH',
+                    headers: this.getHeaders(),
+                    body: JSON.stringify({ status: status })
+                });
+
+                if (!updateResponse.ok) {
+                    const errorText = await updateResponse.text();
+                    throw new Error(`Lỗi cập nhật: ${updateResponse.status} - ${errorText}`);
+                }
+
+                return await updateResponse.json();
             } catch (error) {
-                console.error('Error updating order status:', error);
-                return false;
+                console.error('Error updating order:', error);
+                throw error;
             }
-        }
-
-        handleNewOrder(order) {
-            console.log('🔥 HANDLING NEW ORDER:', order.order_ID);
-
-            // Dừng polling khi có order mới
-            this.stopPolling();
-
-            // Hiển thị QR screen
-            this.showQRScreen(order.order_ID);
-        }
-
-        // Polling Methods
-        startPolling() {
-            // Dừng polling cũ nếu có
-            this.stopPolling();
-
-            // Reset polling delay khi start lại
-            this.pollingDelay = 3000;
-            this.consecutiveErrors = 0;
-
-            // Chỉ polling khi đang ở màn hình chờ
-            if (this.currentOrderId === null) {
-                console.log('🟢 STARTING POLLING... (every', this.pollingDelay + 'ms)');
-
-                // Gọi ngay lần đầu
-                this.checkNewOrders();
-
-                // Sau đó poll theo interval
-                this.pollingInterval = setInterval(() => {
-                    this.checkNewOrders();
-                }, this.pollingDelay);
-            } else {
-                console.log('❌ POLLING NOT STARTED - currentOrderId exists:', this.currentOrderId);
-            }
-        }
-
-        stopPolling() {
-            if (this.pollingInterval) {
-                console.log('Stopping polling...');
-                clearInterval(this.pollingInterval);
-                this.pollingInterval = null;
-            }
-        }
-
-        showQRScreen(orderId) {
-            this.currentOrderId = orderId;
-            this.waitingScreen.style.display = 'none';
-            this.qrScreen.style.display = 'flex';
-
-            // Tạo QR Code thực
-            this.generateQRCode(orderId);
-
-            this.startTimer();
-            console.log(`Showing QR screen for order: ${orderId}`);
-        }
-
-        generateQRCode(orderId) {
-            // Clear previous QR code
-            this.qrCode.innerHTML = '';
-
-            // Tạo URL cho QR code
-            const qrUrl = `https://xacnhan.1900hairsalon.vn/xacnhan?orderId=${orderId}`;
-
-            // Tạo QR Code bằng QRServer API với kích thước responsive
-            const screenWidth = window.innerWidth;
-            let qrSize = '380x380';
-            let imgSize = '380px';
-
-            if (screenWidth <= 768) {
-                qrSize = '280x280';
-                imgSize = '280px';
-            } else if (screenWidth <= 1024) {
-                if (window.innerHeight < window.innerWidth) {
-                    // Landscape
-                    qrSize = '350x350';
-                    imgSize = '350px';
-                } else {
-                    // Portrait
-                    qrSize = '320x320';
-                    imgSize = '320px';
-                }
-            }
-
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}&data=${encodeURIComponent(qrUrl)}`;
-
-            // Tạo img element trực tiếp
-            const qrImage = document.createElement('img');
-            qrImage.src = qrApiUrl;
-            qrImage.alt = `QR Code for Order ${orderId}`;
-            qrImage.style.width = imgSize;
-            qrImage.style.height = imgSize;
-
-            // Add loading indicator
-            this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Đang tạo QR Code...</div>`;
-
-            // Replace with QR image when loaded
-            qrImage.onload = () => {
-                this.qrCode.innerHTML = '';
-                this.qrCode.appendChild(qrImage);
-                console.log(`QR Code generated for: ${qrUrl}`);
-            };
-
-            qrImage.onerror = () => {
-                console.error('QR Code generation error');
-                this.qrCode.innerHTML = `<div style="color: #000; text-align: center; padding: 20px;">Lỗi tạo QR Code cho Order: ${orderId}</div>`;
-            };
-        }
-
-        startTimer() {
-            this.timeLeft = 180; // 3 phút = 180 giây
-            this.updateTimerDisplay();
-
-            this.timerInterval = setInterval(() => {
-                this.timeLeft--;
-                this.updateTimerDisplay();
-
-                if (this.timeLeft <= 0) {
-                    this.onTimerExpired();
-                }
-            }, 1000);
-        }
-
-        updateTimerDisplay() {
-            const minutes = Math.floor(this.timeLeft / 60);
-            const seconds = this.timeLeft % 60;
-            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            this.timer.textContent = `Thời gian còn lại: ${display}`;
-        }
-
-        clearTimer() {
-            if (this.timerInterval) {
-                clearInterval(this.timerInterval);
-                this.timerInterval = null;
-            }
-        }
-
-        onTimerExpired() {
-            console.log('Timer expired, updating status to DONE');
-
-            // Cập nhật status=DONE trong database
-            if (this.currentOrderId) {
-                this.updateOrderStatus(this.currentOrderId, 'DONE');
-            }
-
-            this.clearTimer();
-            this.showWaitingScreen();
-
-            // Bắt đầu polling lại
-            this.startPolling();
-        }
-
-        // Test function - sẽ bỏ khi tích hợp API thực
-        testShowQR() {
-            this.stopPolling();
-            this.showQRScreen('TEST123');
-        }
-
-        testBackToWaiting() {
-            this.showWaitingScreen();
-            this.startPolling();
-        }
-
-        // API Test functions
-        async testAPI() {
-            console.log('Testing API connection...');
-            await this.checkNewOrders();
-        }
-
-        async testUpdateStatus() {
-            if (this.currentOrderId) {
-                await this.updateOrderStatus(this.currentOrderId, 'DONE');
-            } else {
-                console.log('No current order to update');
-            }
-        }
-
-        // QR Test function
-        testQRGeneration() {
-            console.log('Testing QR Code generation with QRServer API...');
-            this.generateQRCode('QR_TEST_001');
         }
     }
 
-    // Khởi tạo app
-    const app = new KioskApp();
+    // GLOBAL VARIABLES
+    const nocoAPI = new NocoDBAPI(NOCODB_CONFIG);
 
-    // Test functions - có thể gọi từ console để test
-    window.testQR = () => app.testShowQR();
-    window.testWaiting = () => app.testBackToWaiting();
-    window.testAPI = () => app.testAPI();
-    window.testUpdate = () => app.testUpdateStatus();
-    window.testQRGen = () => app.testQRGeneration();
+    // Kiosk state
+    let kioskState = 'waiting';
+    let currentOrder = null;
+    let qrTimer = null;
+    let pollingInterval = null;
+    let timeLeft = 180;
+
+    // UTILITY FUNCTIONS
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // KIOSK FUNCTIONS
+    function generateQRCode(orderId) {
+        const qrUrl = `${DETAIL_PAGE_BASE_URL}?orderId=${orderId}`;
+        const qrCodeElement = document.getElementById('qrCode');
+
+        try {
+            qrCodeElement.innerHTML = 'Đang tạo mã QR...';
+
+            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(qrUrl)}&ecc=M`;
+
+            const img = document.createElement('img');
+            img.src = qrImageUrl;
+            img.alt = 'QR Code';
+            img.style.width = '100%';
+            img.style.height = '100%';
+
+            img.onload = () => {
+                qrCodeElement.innerHTML = '';
+                qrCodeElement.appendChild(img);
+                console.log('✅ QR Code generated for:', qrUrl);
+            };
+
+            img.onerror = () => {
+                qrCodeElement.innerHTML = `
+                    <div style="text-align: center; color: #ff4444; padding: 20px;">
+                        <div style="font-size: 24px;">📱</div>
+                        <div>Quét link: ${qrUrl}</div>
+                    </div>
+                `;
+            };
+
+        } catch (error) {
+            console.error('❌ Error generating QR code:', error);
+        }
+    }
+
+    function showWaitingScreen() {
+        kioskState = 'waiting';
+        document.getElementById('waitingScreen').classList.remove('hidden');
+        document.getElementById('qrScreen').classList.remove('active');
+    }
+
+    function showQRScreen(order) {
+        kioskState = 'displaying_qr';
+        currentOrder = order;
+        timeLeft = 180;
+
+        document.getElementById('waitingScreen').classList.add('hidden');
+        document.getElementById('qrScreen').classList.add('active');
+
+        generateQRCode(order.order_ID);
+        startTimer();
+    }
+
+    function startTimer() {
+        if (qrTimer) clearInterval(qrTimer);
+
+        qrTimer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = formatTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(qrTimer);
+                qrTimer = null;
+                finishCurrentOrder();
+            }
+        }, 1000);
+    }
+
+    async function finishCurrentOrder() {
+        if (!currentOrder) {
+            showWaitingScreen();
+            return;
+        }
+
+        try {
+            await nocoAPI.updateOrderStatus(currentOrder.order_ID, 'DONE');
+            console.log(`✅ Updated order ${currentOrder.order_ID} to DONE`);
+        } catch (error) {
+            console.error('❌ Error finishing order:', error);
+        } finally {
+            currentOrder = null;
+            if (qrTimer) {
+                clearInterval(qrTimer);
+                qrTimer = null;
+            }
+            showWaitingScreen();
+        }
+    }
+
+    async function pollForNewRecords() {
+        try {
+            const result = await nocoAPI.getNewRecords();
+            const newRecords = result.list || [];
+
+            // Check if current order still exists and is NEW
+            if (kioskState === 'displaying_qr' && currentOrder) {
+                const currentOrderStillNew = newRecords.find(record =>
+                    record.order_ID === currentOrder.order_ID
+                );
+
+                if (!currentOrderStillNew) {
+                    // Current order is no longer NEW (was confirmed), go back to waiting
+                    console.log(`📱 Order ${currentOrder.order_ID} was confirmed, returning to waiting screen`);
+                    currentOrder = null;
+                    if (qrTimer) {
+                        clearInterval(qrTimer);
+                        qrTimer = null;
+                    }
+                    showWaitingScreen();
+                    return;
+                }
+            }
+
+            // Check for new orders when waiting
+            if (kioskState === 'waiting' && newRecords.length > 0) {
+                const latestOrder = newRecords[0];
+                showQRScreen(latestOrder);
+            }
+        } catch (error) {
+            console.error('Polling error:', error);
+        }
+    }
+
+    function initializeKiosk() {
+        console.log('🚀 Initializing Kiosk...');
+        showWaitingScreen();
+
+        // Poll more frequently (every 2 seconds) to detect confirmations faster
+        pollingInterval = setInterval(pollForNewRecords, 2000);
+        pollForNewRecords();
+
+        console.log('✅ Kiosk initialized with 2s polling');
+    }
+
+    // CLEANUP
+    function cleanup() {
+        if (pollingInterval) clearInterval(pollingInterval);
+        if (qrTimer) clearInterval(qrTimer);
+    }
+
+    // EVENT LISTENERS
+    window.addEventListener('load', initializeKiosk);
+    window.addEventListener('beforeunload', cleanup);
+
+    // DEBUG FUNCTIONS
+    window.appDebug = {
+        // Kiosk debug
+        showQR: (orderId) => {
+            const testOrder = {
+                order_ID: orderId || 'TEST123',
+                name: 'Test Customer',
+                'product/service': 'Cắt tóc',
+                money: 100000
+            };
+            showQRScreen(testOrder);
+        },
+        showWaiting: showWaitingScreen,
+        pollKiosk: pollForNewRecords,
+        finishOrder: finishCurrentOrder,
+        testTimer: () => {
+            if (currentOrder) {
+                timeLeft = 10;
+                console.log('Timer set to 10 seconds for testing');
+            }
+        },
+        getState: () => ({
+            kioskState,
+            currentOrder,
+            timeLeft
+        }),
+        generateTestQR: (orderId) => {
+            generateQRCode(orderId || 'TEST123');
+        }
+    };
 </script>
 </body>
 </html>
