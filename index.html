@@ -112,14 +112,13 @@
         }
         .customer-name {
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             text-align: center;
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            min-height: 60px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -326,7 +325,7 @@
 
         // THÊM PHẦN NÀY - Hiển thị tên khách hàng
         const customerNameElement = document.getElementById('customerName');
-        const prefix = order.gender === 'f' ? 'Chị' : 'Anh';
+        const prefix = 'Khách hàng';
         const customerName = order.name || 'Khách hàng';
         customerNameElement.textContent = `${prefix} ${customerName}`;
 
