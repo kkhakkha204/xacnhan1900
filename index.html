@@ -391,6 +391,23 @@
             const result = await nocoAPI.getNewRecords();
             const newRecords = result.list || [];
 
+            // Lọc bỏ các record có product/service = "Không sử dụng dịch vụ - 0"
+            const filteredRecords = [];
+
+            for (const record of newRecords) {
+                if (record['product/service'] === 'Không sử dụng dịch vụ - 0') {
+                    // Tự động chuyển status thành DONE
+                    try {
+                        await nocoAPI.updateOrderStatus(record.order_ID, 'DONE');
+                        console.log(`✅ Auto-completed order ${record.order_ID} - No service`);
+                    } catch (error) {
+                        console.error('❌ Error auto-completing order:', error);
+                    }
+                } else {
+                    filteredRecords.push(record);
+                }
+            }
+
             // Check if current order still exists and is NEW
             if (kioskState === 'displaying_qr' && currentOrder) {
                 const currentOrderStillNew = newRecords.find(record =>
