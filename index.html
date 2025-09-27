@@ -412,21 +412,8 @@
 
             // Check for new orders when waiting
             if (kioskState === 'waiting' && newRecords.length > 0) {
-                // Lọc ra các đơn hàng hợp lệ (không phải "Không sử dụng dịch vụ - 0 vnđ")
-                const validOrders = newRecords.filter(order => {
-                    const service = order['product/service'] || '';
-                    // Bỏ qua đơn hàng với dịch vụ "Không sử dụng dịch vụ - 0 vnđ"
-                    return !service.includes('Không sử dụng dịch vụ') && !service.includes('0 vnđ');
-                });
-
-                // Chỉ hiển thị QR nếu có đơn hàng hợp lệ
-                if (validOrders.length > 0) {
-                    const latestOrder = validOrders[0];
-                    console.log(`✅ Found valid order: ${latestOrder.order_ID} - ${latestOrder['product/service']}`);
-                    showQRScreen(latestOrder);
-                } else {
-                    console.log('⏭️ Skipping orders with "Không sử dụng dịch vụ"');
-                }
+                const latestOrder = newRecords[0];
+                showQRScreen(latestOrder);
             }
         } catch (error) {
             console.error('Polling error:', error);
