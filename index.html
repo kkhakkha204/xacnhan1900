@@ -134,11 +134,79 @@
             text-align: center;
             margin: 15px 0;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .skip-button {
+            margin-left: 20px;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .skip-button:active {
+            transform: scale(0.95);
+        }
+
+        .queue-list {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .queue-header {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .queue-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #00ff88;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        .queue-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .queue-number {
+            color: #00ff88;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .queue-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .queue-empty {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-style: italic;
+            text-align: center;
         }
     </style>
 </head>
@@ -172,7 +240,11 @@
         </div>
 
         <div class="timer-container">
-            <span class="timer" id="timer">03:00</span>
+            <span class="timer" id="timer">1:00</span>
+            <button class="skip-button" id="skipButton">Bỏ qua</button>
+        </div>
+        <div class="queue-list" id="queueList">
+            <!-- Danh sách đơn chờ sẽ được render bằng JS -->
         </div>
     </div>
 </div>
@@ -281,7 +353,8 @@
     let currentOrder = null;
     let qrTimer = null;
     let pollingInterval = null;
-    let timeLeft = 180;
+    let timeLeft = 60;
+    let queueOrders = []; // Danh sách tối đa 2 đơn chờ tiếp theo
 
     // UTILITY FUNCTIONS
     function formatTime(seconds) {
@@ -326,6 +399,31 @@
         }
     }
 
+    function renderQueueList() {
+        const queueListElement = document.getElementById('queueList');
+
+        if (queueOrders.length === 0) {
+            queueListElement.innerHTML = `
+            <div class="queue-header">Đơn tiếp theo</div>
+            <div class="queue-empty">Không có đơn chờ</div>
+        `;
+            return;
+        }
+
+        let html = '<div class="queue-header">Đơn chờ</div>';
+
+        queueOrders.forEach((order, index) => {
+            html += `
+            <div class="queue-item">
+                <div class="queue-number">${index + 1}</div>
+                <div class="queue-name">${order.name || 'Khách hàng'}</div>
+            </div>
+        `;
+        });
+
+        queueListElement.innerHTML = html;
+    }
+
     function showWaitingScreen() {
         kioskState = 'waiting';
         document.getElementById('waitingScreen').classList.remove('hidden');
@@ -335,7 +433,7 @@
     function showQRScreen(order) {
         kioskState = 'displaying_qr';
         currentOrder = order;
-        timeLeft = 180;
+        timeLeft = 60;
 
         document.getElementById('waitingScreen').classList.add('hidden');
         document.getElementById('qrScreen').classList.add('active');
@@ -348,6 +446,7 @@
 
         generateQRCode(order.order_ID);
         startTimer();
+        queueOrders = [];
     }
 
     function startTimer() {
@@ -386,6 +485,29 @@
         }
     }
 
+    async function skipCurrentOrder() {
+        if (!currentOrder) {
+            showWaitingScreen();
+            return;
+        }
+
+        try {
+            await nocoAPI.updateOrderStatus(currentOrder.order_ID, 'PASS');
+            console.log(`⏭️ Skipped order ${currentOrder.order_ID} to PASS`);
+        } catch (error) {
+            console.error('❌ Error skipping order:', error);
+        } finally {
+            currentOrder = null;
+            if (qrTimer) {
+                clearInterval(qrTimer);
+                qrTimer = null;
+            }
+            showWaitingScreen();
+            // Poll ngay để lấy đơn tiếp theo
+            pollForNewRecords();
+        }
+    }
+
     async function pollForNewRecords() {
         try {
             const result = await nocoAPI.getNewRecords();
@@ -398,7 +520,6 @@
                 );
 
                 if (!currentOrderStillNew) {
-                    // Current order is no longer NEW (was confirmed), go back to waiting
                     console.log(`📱 Order ${currentOrder.order_ID} was confirmed, returning to waiting screen`);
                     currentOrder = null;
                     if (qrTimer) {
@@ -408,6 +529,12 @@
                     showWaitingScreen();
                     return;
                 }
+
+                // Cập nhật danh sách đơn chờ (bỏ đơn hiện tại, lấy 2 đơn tiếp theo)
+                queueOrders = newRecords
+                    .filter(record => record.order_ID !== currentOrder.order_ID)
+                    .slice(0, 2);
+                renderQueueList();
             }
 
             // Check for new orders when waiting
@@ -427,6 +554,9 @@
         // Poll more frequently (every 2 seconds) to detect confirmations faster
         pollingInterval = setInterval(pollForNewRecords, 2000);
         pollForNewRecords();
+
+        // Add skip button handler
+        document.getElementById('skipButton').addEventListener('click', skipCurrentOrder);
 
         console.log('✅ Kiosk initialized with 2s polling');
     }
