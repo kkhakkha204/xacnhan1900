@@ -240,7 +240,7 @@
         </div>
 
         <div class="timer-container">
-            <span class="timer" id="timer">1:00</span>
+            <span class="timer" id="timer">2:00</span>
             <button class="skip-button" id="skipButton">Bỏ qua</button>
         </div>
         <div class="queue-list" id="queueList">
@@ -433,7 +433,7 @@
     function showQRScreen(order) {
         kioskState = 'displaying_qr';
         currentOrder = order;
-        timeLeft = 60;
+        timeLeft = 120;
 
         document.getElementById('waitingScreen').classList.add('hidden');
         document.getElementById('qrScreen').classList.add('active');
